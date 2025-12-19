@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Networks Basics: From Perceptron to Multi-Layer Perceptron - Ying Zhang</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-links">
+                <a href="../index.html">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                    Home
+                </a>
+                <!-- <a href="../blog.html" class="active">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path><path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"></path></svg>
+                    Blog
+                </a> -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="container blog-full-width">
+        <main class="content blog-post">
+            <a href="../blog.html" class="back-to-blog">← Back to Blog</a>
+            
+            <article>
+                <div class="blog-post-header">
+                    <h1 class="blog-post-title">Neural Networks Basics: From Perceptron to Multi-Layer Perceptron</h1>
+                    <div class="blog-post-meta">
+                        <span>📅 January 20, 2025</span>
+                        <span>🏷️ Neural Networks, Deep Learning, Python</span>
+                    </div>
+                </div>
+
+                <div class="blog-post-content">
+                    <h3>1. What are Neural Networks?</h3>
+                    <p>
+                        Neural networks are computational models inspired by biological neurons, consisting of a large number of interconnected nodes (neurons). Each neuron receives inputs, performs weighted summation, and produces output through an activation function. Neural networks learn patterns in data by adjusting weights and biases.
+                    </p>
+
+                    <h3>2. Perceptron</h3>
+                    <p>
+                        The perceptron is the simplest neural network model, proposed by Frank Rosenblatt in 1957. It can only solve linearly separable problems.
+                    </p>
+
+                    <h4>2.1 Structure of Perceptron</h4>
+                    <p>
+                        A perceptron consists of:
+                    </p>
+                    <ul>
+                        <li><strong>Input Layer</strong>: Receives feature vectors</li>
+                        <li><strong>Weights</strong>: Each input has a weight</li>
+                        <li><strong>Bias</strong>: A constant term</li>
+                        <li><strong>Activation Function</strong>: Usually a step function or sign function</li>
+                    </ul>
+
+                    <h4>2.2 Mathematical Representation</h4>
+                    <p>
+                        For input vector <code>x = [x₁, x₂, ..., xₙ]</code>, the perceptron output is:
+                    </p>
+                    <pre><code>y = f(Σ(wᵢ × xᵢ) + b)
+
+where:
+- wᵢ is the weight of the i-th input
+- b is the bias
+- f is the activation function</code></pre>
+
+                    <h4>2.3 Python实现感知机</h4>
+                    <pre><code>import numpy as np
+
+class Perceptron:
+    def __init__(self, learning_rate=0.01, n_iterations=1000):
+        self.learning_rate = learning_rate
+        self.n_iterations = n_iterations
+        self.weights = None
+        self.bias = None
+    
+    def fit(self, X, y):
+        # 初始化权重和偏置
+        self.weights = np.zeros(X.shape[1])
+        self.bias = 0
+        
+        # 训练过程
+        for _ in range(self.n_iterations):
+            for i in range(X.shape[0]):
+                # 计算预测值
+                linear_output = np.dot(X[i], self.weights) + self.bias
+                prediction = self.activation(linear_output)
+                
+                # 更新权重和偏置
+                update = self.learning_rate * (y[i] - prediction)
+                self.weights += update * X[i]
+                self.bias += update
+    
+    def activation(self, x):
+        return 1 if x >= 0 else 0
+    
+    def predict(self, X):
+        linear_output = np.dot(X, self.weights) + self.bias
+        return np.array([self.activation(x) for x in linear_output])</code></pre>
+
+                    <h3>3. 多层感知机（MLP）</h3>
+                    <p>
+                        多层感知机是感知机的扩展，包含一个或多个隐藏层。这使得MLP能够学习非线性关系，解决更复杂的问题。
+                    </p>
+
+                    <h4>3.1 MLP的结构</h4>
+                    <ul>
+                        <li><strong>输入层</strong>：接收原始特征</li>
+                        <li><strong>隐藏层</strong>：一个或多个中间层，进行特征变换</li>
+                        <li><strong>输出层</strong>：产生最终预测</li>
+                    </ul>
+
+                    <h4>3.2 前向传播</h4>
+                    <p>
+                        前向传播是数据从输入层流向输出层的过程：
+                    </p>
+                    <pre><code>def forward_propagation(X, weights, biases, activation_func):
+    """
+    X: 输入数据
+    weights: 权重列表 [W1, W2, ..., Wn]
+    biases: 偏置列表 [b1, b2, ..., bn]
+    activation_func: 激活函数
+    """
+    activations = [X]
+    
+    for W, b in zip(weights, biases):
+        z = np.dot(activations[-1], W) + b
+        a = activation_func(z)
+        activations.append(a)
+    
+    return activations</code></pre>
+
+                    <h4>3.3 反向传播算法</h4>
+                    <p>
+                        反向传播是训练神经网络的核心算法，通过计算损失函数对权重的梯度来更新参数。
+                    </p>
+                    <p>
+                        基本步骤：
+                    </p>
+                    <ol>
+                        <li>前向传播计算输出和损失</li>
+                        <li>计算输出层的误差</li>
+                        <li>将误差反向传播到隐藏层</li>
+                        <li>计算梯度并更新权重</li>
+                    </ol>
+
+                    <h4>3.4 使用PyTorch实现MLP</h4>
+                    <pre><code>import torch
+import torch.nn as nn
+import torch.optim as optim
+
+class MLP(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(MLP, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, output_size)
+        self.sigmoid = nn.Sigmoid()
+    
+    def forward(self, x):
+        out = self.fc1(x)
+        out = self.relu(out)
+        out = self.fc2(out)
+        out = self.sigmoid(out)
+        return out
+
+# 使用示例
+model = MLP(input_size=784, hidden_size=128, output_size=10)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+# 训练循环
+for epoch in range(num_epochs):
+    for batch_x, batch_y in train_loader:
+        # 前向传播
+        outputs = model(batch_x)
+        loss = criterion(outputs, batch_y)
+        
+        # 反向传播
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()</code></pre>
+
+                    <h3>4. 激活函数</h3>
+                    <p>
+                        激活函数引入非线性，使神经网络能够学习复杂模式。常用的激活函数包括：
+                    </p>
+                    <ul>
+                        <li><strong>Sigmoid</strong>：<code>σ(x) = 1 / (1 + e⁻ˣ)</code>，输出范围(0,1)</li>
+                        <li><strong>Tanh</strong>：<code>tanh(x) = (eˣ - e⁻ˣ) / (eˣ + e⁻ˣ)</code>，输出范围(-1,1)</li>
+                        <li><strong>ReLU</strong>：<code>ReLU(x) = max(0, x)</code>，最常用的激活函数</li>
+                        <li><strong>Leaky ReLU</strong>：解决ReLU的"死亡神经元"问题</li>
+                    </ul>
+
+                    <h3>5. 损失函数和优化器</h3>
+                    <h4>5.1 常用损失函数</h4>
+                    <ul>
+                        <li><strong>均方误差（MSE）</strong>：用于回归问题</li>
+                        <li><strong>交叉熵损失</strong>：用于分类问题</li>
+                        <li><strong>二元交叉熵</strong>：用于二分类问题</li>
+                    </ul>
+
+                    <h4>5.2 优化器</h4>
+                    <ul>
+                        <li><strong>随机梯度下降（SGD）</strong>：基础优化器</li>
+                        <li><strong>Adam</strong>：自适应学习率，最常用</li>
+                        <li><strong>RMSprop</strong>：适合处理非平稳目标</li>
+                    </ul>
+
+                    <h3>6. 实践建议</h3>
+                    <ul>
+                        <li>从简单模型开始，逐步增加复杂度</li>
+                        <li>使用合适的激活函数和初始化方法</li>
+                        <li>注意过拟合问题，使用正则化技术</li>
+                        <li>合理设置学习率和批次大小</li>
+                        <li>使用验证集监控模型性能</li>
+                    </ul>
+
+                    <h3>7. 总结</h3>
+                    <p>
+                        神经网络是深度学习的基石。从简单的感知机到复杂的多层感知机，理解这些基础概念对于深入学习深度学习至关重要。通过实践和项目，你会逐渐掌握如何设计和训练有效的神经网络模型。
+                    </p>
+
+                    <blockquote>
+                        <strong>提示：</strong>建议使用现代深度学习框架（如PyTorch、TensorFlow）来实现神经网络，它们提供了自动微分、GPU加速等强大功能，可以大大提高开发效率。
+                    </blockquote>
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://github.com/Yingurt001" target="_blank" title="GitHub"><img src="https://img.icons8.com/color/24/000000/github.png" alt="GitHub"></a>
+                <a href="https://orcid.org/0009-0000-2900-9197" target="_blank" title="ORCID"><img src="https://upload.wikimedia.org/wikipedia/commons/archive/f/f7/20160723044737%21Orcid_icon.png" alt="ORCID"></a>
+            </div>
+            <div class="footer-copyright">© Ying Zhang</div>
+        </div>
+    </footer>
+</body>
+</html>
+
